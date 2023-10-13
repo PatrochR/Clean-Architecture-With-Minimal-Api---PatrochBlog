@@ -63,7 +63,8 @@ namespace PatrochBlog.Infrastructure.Data.Repositories
             var category = await _context.Categories.Select(x => new CategoryDomain
             {
                 Id = x.Id,
-                Title = x.Title
+                Title = x.Title,
+                CreatedDate = x.CreatedDate
             }).FirstOrDefaultAsync(x => x.Id == id);
 
             if(category is null)
