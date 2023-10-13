@@ -10,7 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddDbContext<PatrochBlogDbContext>(options =>
-    options.UseSqlite("Data Source=PatrochDb.db"));
+    options.UseSqlite("Data Source=D:\\.Project\\ShortenerUrl\\.Net\\PatrochBlog\\PatrochBlog.Infrastructure\\PatrochDb.db"));
 
 builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
