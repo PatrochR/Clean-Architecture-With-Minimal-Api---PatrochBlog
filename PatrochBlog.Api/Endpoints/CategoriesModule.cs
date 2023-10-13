@@ -1,5 +1,7 @@
 ﻿using PatrochBlog.Core.Domain.Request;
 using PatrochBlog.Core.Interfaces.Repository;
+using PatrochBlog.Api.ResponseModel;
+using PatrochBlog.Core.Domain;
 
 namespace PatrochBlog.Api.Endpoints
 {
@@ -9,26 +11,35 @@ namespace PatrochBlog.Api.Endpoints
         {
             app.MapGet("/category", async (ICategoryRepository _categoryRepository) => 
             {
+                var response = new Response<List<Category>>(true);
                 var categories = await _categoryRepository.GetAllCategory();
                 if (categories is null)
                 {
-                    return Results.Ok("We Dont Have Category");
+                    response.Success = false;
+                    response.ErrorMessage = "We Dont Have A Category";
+                    return Results.BadRequest(response);
                 }
-                return Results.Ok(categories);
+                response.Data = categories;
+                return Results.Ok(response);
             });
             app.MapGet("/category/{id}", async (int id , ICategoryRepository _categoryRepository) => 
             {
+                var response = new Response<Category>(true);
                 try
                 {
-                    return Results.Ok(await _categoryRepository.GetCategoryById(id));
+                    response.Data = await _categoryRepository.GetCategoryById(id);
+                    return Results.Ok(response);
                 }
                 catch (Exception ex)
                 {
-                    return Results.BadRequest(ex.Message);
+                    response.Success = false;
+                    response.ErrorMessage = ex.Message;
+                    return Results.BadRequest(response);
                 }
             });
             app.MapPost("/category", async (AddCategoryRequest request , ICategoryRepository _categoryRepository) => 
             {
+                var response = new Response<string>(true);
                 try
                 {
                     var id = await _categoryRepository.AddCategory(new Core.Domain.Category 
@@ -36,16 +47,21 @@ namespace PatrochBlog.Api.Endpoints
                         CreatedDate = DateTime.UtcNow,
                         Title = request.Title,
                     });
-                    return Results.Ok($"Category {id} Was Added");
+                    response.Data = $"Category {id} Was Added";
+                    return Results.Ok(response);
 
                 }
                 catch (Exception ex)
                 {
-                    return Results.BadRequest(ex.Message);
+                    response.Success = false;
+                    response.ErrorMessage= ex.Message;
+                    return Results.BadRequest(response);
                 }
             });
             app.MapPut("/category", async (EditCategoryRequest request , ICategoryRepository _categoryRepository) => 
             {
+                var response = new Response<string>(true);
+
                 try
                 {
                     await _categoryRepository.EditCategory(new Core.Domain.Category 
@@ -53,11 +69,14 @@ namespace PatrochBlog.Api.Endpoints
                         Id = request.Id,
                         Title = request.Title
                     });
-                    return Results.Ok("Category Edited");
+                    response.Data = "Category Edited";
+                    return Results.Ok(response);
                 }
                 catch (Exception ex)
                 {
-                    return Results.Ok(ex.Message);
+                    response.Success = false;
+                    response.ErrorMessage = ex.Message;
+                    return Results.BadRequest(response);
                 }
             });
         }
