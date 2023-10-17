@@ -79,6 +79,23 @@ namespace PatrochBlog.Api.Endpoints
                     return Results.BadRequest(response);
                 }
             });
+
+            app.MapDelete("/category", async (DeleteCategoryRequest request , ICategoryRepository _categoryRepository) =>
+            {
+                var response = new Response<string>(true);
+                try
+                {
+                    await _categoryRepository.DeleteCategory(request.Id);
+                    response.Data = "Category Deleted";
+                    return Results.Ok(response);
+                }
+                catch (Exception ex)
+                {
+                    response.Success = false;
+                    response.ErrorMessage = ex.Message;
+                    return Results.BadRequest(response);
+                }
+            });
         }
     }
 }
