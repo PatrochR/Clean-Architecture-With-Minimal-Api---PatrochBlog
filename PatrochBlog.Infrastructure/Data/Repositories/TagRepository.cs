@@ -22,19 +22,31 @@ namespace PatrochBlog.Infrastructure.Data.Repositories
             _context = context;
         }
 
-        public Task<int> CreateTag(TagDomain tag)
+        public async Task<int> AddTag(TagDomain tag)
         {
-            throw new NotImplementedException();
+            var dbModel = new TagEntity()
+            {
+                CreatedTime = DateTime.Now,
+                Title = tag.Title,
+                Id = tag.Id,
+            };
+            await _context.SaveChangesAsync();
+            return tag.Id;
         }
 
-        public Task DeleteTag(int id)
+        public async Task DeleteTag(int id)
         {
-            throw new NotImplementedException();
+            var tag = await GetTagAsync(id);
+            _context.Tags.Remove(tag);
+            await _context.SaveChangesAsync();
         }
 
-        public Task EditTag(TagDomain tag)
+        public async Task EditTag(TagDomain tag)
         {
-            throw new NotImplementedException();
+            var oldTag = await GetTagAsync(tag.Id);
+            oldTag.Title = tag.Title;
+            _context.Tags.Update(oldTag);
+            await _context.SaveChangesAsync();
         }
 
         public async Task<List<TagDomain>> GetAllTags()
@@ -58,6 +70,16 @@ namespace PatrochBlog.Infrastructure.Data.Repositories
             if(tag is null)
             {
                 throw new Exception("Tag Is Not Exist!");
+            }
+            return tag;
+        }
+
+        private async Task<TagEntity> GetTagAsync(int id)
+        {
+            var tag = await _context.Tags.FirstOrDefaultAsync(t => t.Id == id);
+            if(tag is null ) 
+            {
+                throw new Exception("Not Found!");
             }
             return tag;
         }

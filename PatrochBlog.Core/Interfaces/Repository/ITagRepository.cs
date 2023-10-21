@@ -11,7 +11,7 @@ namespace PatrochBlog.Core.Interfaces.Repository
     {
         Task<List<Tag>> GetAllTags();
         Task<Tag> GetTagById(int id);    
-        Task<int> CreateTag(Tag tag);
+        Task<int> AddTag(Tag tag);
         Task EditTag(Tag tag);
         Task DeleteTag(int id);
 
